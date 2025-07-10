@@ -1,23 +1,38 @@
+import React from 'react';
 import { useSelector } from 'react-redux';
+import '../assets/visitorProfile.css';
 
 const VisitorProfile = () => {
-  const visitorId = useSelector((state) => state.visitors.selectedVisitorId);
-  const visitor = useSelector((state) =>
-    state.visitors.list.find((v) => v.id === visitorId)
+  const visitorId = useSelector(s => s.visitors.selectedVisitorId);
+  const visitor = useSelector(s =>
+    s.visitors.list.find(v => v.id === visitorId)
   );
 
   return (
-    <div style={{ width: '20%', padding: '10px' }}>
-      <h3>Visitor Profile</h3>
+    <aside className="profile-sidebar">
+      <h3 className="profile-header">Visitor Profile</h3>
       {visitor ? (
-        <div>
-          <p><strong>Name:</strong> {visitor.name}</p>
-          <p><strong>Email:</strong> {visitor.email}</p>
+        <div className="profile-body">
+          <div className="avatar-circle">
+            {visitor.avatar ? (
+              <img src={visitor.avatar} alt="avatar" />
+            ) : (
+              visitor.name
+                .split(' ')
+                .map(n => n[0])
+                .join('')
+                .toUpperCase()
+            )}
+          </div>
+          <div className="info">
+            <p><span>Name:</span> {visitor.name}</p>
+            <p><span>Email:</span> {visitor.email}</p>
+          </div>
         </div>
       ) : (
-        <p>No visitor selected</p>
+        <div className="no-data">No visitor selected</div>
       )}
-    </div>
+    </aside>
   );
 };
 

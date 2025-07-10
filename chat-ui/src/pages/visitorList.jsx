@@ -1,53 +1,33 @@
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectVisitor } from '../redux/visitorSlice';
 import { clearUnread } from '../redux/uiSlice';
+import VisitorItem from './visitorItem';
+import '../assets/visitorList.css';
 
 const VisitorList = () => {
-  const visitors = useSelector((state) => state.visitors.list);
-  const selectedVisitorId = useSelector((state) => state.visitors.selectedVisitorId);
-  const unread = useSelector((state) => state.ui.unreadMessages);
+  const visitors = useSelector(s => s.visitors.list);
+  const selected = useSelector(s => s.visitors.selectedVisitorId);
+  const unread = useSelector(s => s.ui.unreadMessages);
   const dispatch = useDispatch();
 
-  const handleSelect = (id) => {
+  const handleSelect = id => {
     dispatch(selectVisitor(id));
     dispatch(clearUnread(id));
   };
 
   return (
-    <div style={{ width: '20%', borderRight: '1px solid #ccc', padding: '10px' }}>
+    <div className="visitor-list">
       <h3>Visitors</h3>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {visitors.map((v) => (
-          <li
+      <ul>
+        {visitors.map(v => (
+          <VisitorItem
             key={v.id}
-            onClick={() => handleSelect(v.id)}
-            style={{
-              cursor: 'pointer',
-              padding: '8px',
-              marginBottom: '5px',
-              background: v.id === selectedVisitorId ? '#eee' : '#f9f9f9',
-              borderRadius: '5px',
-              position: 'relative',
-            }}
-          >
-            {v.name}
-            {unread[v.id] && (
-              <span
-                style={{
-                  background: 'red',
-                  color: 'white',
-                  borderRadius: '50%',
-                  padding: '2px 6px',
-                  fontSize: '12px',
-                  position: 'absolute',
-                  right: 10,
-                  top: 10,
-                }}
-              >
-                {unread[v.id]}
-              </span>
-            )}
-          </li>
+            visitor={v}
+            isSelected={v.id === selected}
+            unreadCount={unread[v.id] || 0}
+            onSelect={handleSelect}
+          />
         ))}
       </ul>
     </div>

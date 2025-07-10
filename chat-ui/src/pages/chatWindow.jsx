@@ -1,40 +1,55 @@
-import { useSelector } from 'react-redux';
+// ChatWindow.jsx
+import React, { useState, useRef, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { sendMessage } from '../redux/chatsSlice';
+import '../assets/chatWindow.css';
 
 const ChatWindow = () => {
-  const visitorId = useSelector((state) => state.visitors.selectedVisitorId);
-  const messages = useSelector(
-    (state) => (visitorId && state.chats.conversations[visitorId]) || []
-  );
+  const visitorId = useSelector(s => s.visitors.selectedVisitorId);
+  const messages = useSelector(s => (visitorId && s.chats.conversations[visitorId]) || []);
+  const [input, setInput] = useState('');
+  const dispatch = useDispatch();
+  const chatRef = useRef();
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSend = () => {
+    if (!visitorId || !input.trim()) return;
+    dispatch(sendMessage({ visitorId, content: input }));
+    setInput('');
+  };
 
   return (
-    <div style={{ width: '60%', padding: '10px', borderRight: '1px solid #ccc' }}>
+    <div className="chat-container">
       <h3>Chat</h3>
       {visitorId ? (
-        <div style={{ height: '400px', overflowY: 'auto' }}>
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              style={{
-                textAlign: msg.sender === 'agent' ? 'right' : 'left',
-                margin: '5px 0',
-              }}
-            >
-              <span
-                style={{ 
-                  background: msg.sender === 'agent' ? '#dcf8c6' : '#f1f0f0',
-                  padding: '8px',
-                  borderRadius: '10px',
-                  display: 'inline-block',
-                  maxWidth: '60%',
-                }}
+        <>
+          <div className="messages" ref={chatRef}>
+            {messages.map(msg => (
+              <div
+                key={msg.id}
+                className={`message ${msg.sender === 'agent' ? 'agent' : 'visitor'}`}
               >
-                {msg.content}
-              </span>
-            </div>
-          ))}
-        </div>
+                <span>{msg.content}</span>
+              </div>
+            ))}
+          </div>
+          <div className="input-area">
+            <textarea
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              rows={1}
+              placeholder="Type a message…"
+            />
+            <button onClick={handleSend}>Send</button>
+          </div>
+        </>
       ) : (
-        <p>Select a visitor to start chat</p>
+        <p className="no-select">Select a visitor to start chat</p>
       )}
     </div>
   );
