@@ -5,7 +5,7 @@ import { addVisitor } from '../redux/visitorSlice';
 import { addMessage } from '../redux/chatsSlice';
 import { incrementUnread } from '../redux/uiSlice';
 
-const socket = io('https://chatappserver-kv1u.onrender.com:4000');
+const socket = io('https://chatappserver-kv1u.onrender.com');
 
 const useSocket = () => {
   const dispatch = useDispatch();
