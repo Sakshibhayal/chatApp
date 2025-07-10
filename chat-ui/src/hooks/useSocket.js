@@ -11,19 +11,12 @@ const useSocket = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('Connecting to socket server...');
-    
-    socket.on('connect', () => {
-      console.log('Socket connected:', socket.id);
-    });
 
     socket.on('new-visitor', (visitor) => {
-      console.log(' Visitor received:', visitor);
       dispatch(addVisitor(visitor));
     });
 
     socket.on('new-message', (message) => {
-      console.log('Message received:', message);
       dispatch(addMessage(message));
       dispatch(incrementUnread(message.visitorId));
     });
